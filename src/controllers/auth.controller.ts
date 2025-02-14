@@ -8,6 +8,8 @@ import "dotenv/config";
 import { errorHandlerWrapper } from "@/utils";
 
 const signUpHandler = async (req: Request, res: Response) => {
+    // #swagger.tags = ['AUTH']
+
   const { name, password, role } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,6 +28,8 @@ const signUpHandler = async (req: Request, res: Response) => {
 };
 
 const signInHandler = async (req: Request, res: Response) => {
+    // #swagger.tags = ['AUTH']
+
   const { name, password } = req.body;
 
   const user = await authService.getUser({ name });

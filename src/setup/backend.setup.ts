@@ -10,7 +10,9 @@ import {
   errorHandlerMiddleware,
   routeMiddleware,
 } from "@/middlewares";
-
+// import swaggerSpec from "./swagger-output.json";
+import swaggerSpec from '../../swagger-output.json';
+import swaggerUI from "swagger-ui-express";
 export const backendSetup = () => {
   const app: Express = express();
 
@@ -21,6 +23,7 @@ export const backendSetup = () => {
   app.use("/health", (_req: Request, res: Response) => {
     res.send("It's healthy!");
   }); //health check
+  app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
   app.use("/api", router);
 
