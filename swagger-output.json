@@ -1,0 +1,53 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Sentiment Analysis API",
+    "description": "This API allows users to analyze the sentiment of a given text. It is designed to provide insights into customer feedback for a new product on an e-commerce website.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/feedback": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  }
+}
