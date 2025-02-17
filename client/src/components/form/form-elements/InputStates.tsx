@@ -3,7 +3,11 @@ import ComponentCard from "../../common/ComponentCard";
 import Input from "../input/InputField";
 import Label from "../Label";
 
-export default function InputStates() {
+interface InputStatesProps {
+  onEmailChange: (email: string) => void; 
+}
+
+export default function InputStates({ onEmailChange }: InputStatesProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState(false);
 
@@ -19,11 +23,13 @@ export default function InputStates() {
     const value = e.target.value;
     setEmail(value);
     validateEmail(value);
+    onEmailChange(value); 
   };
+
   return (
     <ComponentCard
-      title=" Product feedback"
-      desc=" Write feedback about our product  "
+      title="Product feedback"
+      desc="Write feedback about our product"
     >
       <div className="space-y-5 sm:space-y-6">
         {/* Error Input */}
@@ -38,31 +44,6 @@ export default function InputStates() {
             hint={error ? "This is an invalid email address." : ""}
           />
         </div>
-
-        {/* Success Input */}
-        {/* <div>
-          <Label>Email</Label>
-          <Input
-            type="email"
-            value={email}
-            success={!error}
-            onChange={handleEmailChange}
-            placeholder="Enter your email"
-            hint={!error ? "Valid email!" : ""}
-          />
-        </div> */}
-
-        {/* Disabled Input */}
-        {/* <div>
-          <Label>Email</Label>
-          <Input
-            type="text"
-            value="disabled@example.com"
-            disabled={true}
-            placeholder="Disabled email"
-            hint="This field is disabled."
-          />
-        </div> */}
       </div>
     </ComponentCard>
   );

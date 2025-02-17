@@ -1,11 +1,36 @@
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { MoreDotIcon } from "../../icons";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { useState } from "react";
+import { useGetAllFeedbacksQuery } from "../../services/feedback-api";
 
 export default function MonthlySalesChart() {
+  const { data: feedbacks, isLoading, isError, error } = useGetAllFeedbacksQuery();
+  const [seriesData, setSeriesData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (feedbacks) {
+      const monthlyFeedbacks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      feedbacks.forEach(feedback => {
+        const month = new Date(feedback.createdAt).getMonth();
+        monthlyFeedbacks[month]++;
+      });
+      setSeriesData(monthlyFeedbacks);
+    }
+  }, [feedbacks]);
+
+  if (isLoading) {
+    return <div>Loading feedback data...</div>;
+  }
+
+  if (isError) {
+    console.error('Error fetching feedback data:', error);
+    return <div>Error fetching feedback data: {(error as any)?.message}</div>;
+  }
+
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -75,7 +100,6 @@ export default function MonthlySalesChart() {
     fill: {
       opacity: 1,
     },
-
     tooltip: {
       x: {
         show: false,
@@ -85,13 +109,13 @@ export default function MonthlySalesChart() {
       },
     },
   };
+
   const series = [
     {
-      name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      name: "Feedbacks",
+      data: seriesData,
     },
   ];
-  const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -105,7 +129,7 @@ export default function MonthlySalesChart() {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Monthly Sales
+          Monthly Feedbacks
         </h3>
         <div className="relative inline-block">
           <button onClick={toggleDropdown}>

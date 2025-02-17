@@ -3,10 +3,15 @@ import TextAreaInput from "../../components/form/form-elements/TextAreaInput";
 import InputStates from "../../components/form/form-elements/InputStates";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";
-import { useSubmitFeedbackMutation } from "../../services/feedback-api"; 
+import { useSubmitFeedbackMutation } from "../../services/feedback-api";
+import Alert from "../../components/ui/alert/Alert";
 
 export default function FormElements() {
-  const [feedbackText, setFeedbackText] = useState(""); 
+  const [feedbackText, setFeedbackText] = useState("");
+  const [email, setEmail] = useState(""); 
+  const [showAlert, setShowAlert] = useState(false); 
+  const [alertVariant, setAlertVariant] = useState<"success" | "error">("success"); 
+  const [alertMessage, setAlertMessage] = useState(""); 
 
   // RTK Query mutation hook
   const [submitFeedback, { isLoading, isError, error }] = useSubmitFeedbackMutation();
@@ -16,19 +21,49 @@ export default function FormElements() {
 
   const handleSubmit = async () => {
     if (!feedbackText.trim()) {
-      alert("Please enter feedback before submitting.");
+      setAlertVariant("error");
+      setAlertMessage("Please enter feedback before submitting.");
+      setShowAlert(true);
+      return;
+    }
+
+    if (!email.trim()) {
+      setAlertVariant("error");
+      setAlertMessage("Please enter your email before submitting.");
+      setShowAlert(true);
       return;
     }
 
     try {
-      const response = await submitFeedback({ text: feedbackText }).unwrap();
-      alert("Feedback submitted successfully!");
-      setFeedbackText(""); 
+      const payload = {
+        text: feedbackText,
+        email: email, 
+        productName: "Hand Sanitizer", 
+      };
+
+      const response = await submitFeedback(payload).unwrap();
+      
+      setAlertVariant("success");
+      setAlertMessage("Feedback submitted successfully!");
+      setShowAlert(true);
+      setFeedbackText("");
+      setEmail("");
     } catch (err) {
-      console.error("Failed to submit feedback:", err); 
-      alert("Failed to submit feedback. Please try again.");
+      console.error("Failed to submit feedback:", err);
+      setAlertVariant("error");
+      setAlertMessage("Failed to submit feedback. Please try again.");
+      setShowAlert(true);
     }
   };
+
+  React.useEffect(() => {
+    if (showAlert) {
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+      }, 5000); 
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-10">
@@ -36,6 +71,17 @@ export default function FormElements() {
         title="Hiring Task"
         description="Sentiment Analysis App"
       />
+
+      {/* Alert Component */}
+      {showAlert && (
+        <div className="fixed top-4 right-4 z-50">
+          <Alert
+            variant={alertVariant}
+            title={alertVariant === "success" ? "Success" : "Error"}
+            message={alertMessage}
+          />
+        </div>
+      )}
 
       {/* Landing Page Section */}
       <div className="max-w-6xl w-full px-4 mb-16">
@@ -106,12 +152,13 @@ export default function FormElements() {
             </div>
           </div>
 
-          <InputStates />
+          {/* InputStates with email */}
+          <InputStates onEmailChange={(email: string) => setEmail(email)} />
 
           {/* Feedback Text Area */}
           <TextAreaInput
             value={feedbackText}
-            onChange={(value) => setFeedbackText(value)} // Pass the value directly
+            onChange={(value: string) => setFeedbackText(value)}
             placeholder="Enter your feedback here..."
           />
 
